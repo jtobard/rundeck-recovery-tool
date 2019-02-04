@@ -154,7 +154,8 @@ public class App {
                     copyExecutions(executions);
                 }
                 //create job files
-                extractJobs(jobs);
+                Path org = Paths.get(path);
+                extractJobs(org,jobs);
             }
             return tempDirWithPrefix;
         } catch (Exception e) {
@@ -163,12 +164,13 @@ public class App {
         return null;
     }
 
-    private static void extractJobs(Path destination){
-        Path org = Paths.get(path);
-        File[] listOfFiles = org.toFile().listFiles();
+    private static void extractJobs(Path origin, Path destination){
+        File[] listOfFiles = origin.toFile().listFiles();
         Arrays.sort(listOfFiles);
         for (File file : listOfFiles) {
-            if (file.isFile() && file.getName().endsWith("xml")) {
+            if(file.isDirectory()){
+                extractJobs(file.toPath(), destination);
+            }else if (file.isFile() && file.getName().endsWith("xml")) {
                 extractJob(file, destination);
             }
         }
